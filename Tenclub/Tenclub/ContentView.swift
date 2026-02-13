@@ -41,23 +41,21 @@ struct HomeView: View {
             Spacer()
 
             if screenTimeManager.isAuthorized {
-                // Authorized - show unlock count
-                Text("\(unlockCount)")
-                    .font(.system(size: 120, weight: .bold, design: .rounded))
-                    .foregroundColor(unlockCount > 10 ? .red : .primary)
+                // Authorized - show playing card
+                PlayingCardView(unlockCount: unlockCount)
 
-                Text("unlocks today")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
+                // Show count below card
+                Text("\(unlockCount) unlock\(unlockCount == 1 ? "" : "s") today")
+                    .font(.title3)
+                    .foregroundColor(unlockCount > 10 ? .red : .secondary)
+                    .padding(.top, 8)
 
                 // Warning message if over 10
                 if unlockCount > 10 {
                     Text("No tenclub today! Better luck tomorrow")
-                        .font(.headline)
+                        .font(.subheadline)
                         .foregroundColor(.red)
-                        .padding()
-                        .background(Color.red.opacity(0.1))
-                        .cornerRadius(10)
+                        .padding(.top, 4)
                 }
 
                 Spacer()

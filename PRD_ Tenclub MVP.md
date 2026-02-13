@@ -15,15 +15,26 @@ PRD: Tenclub MVP
   *  V3 As a tenclub accountability partner:  
     * I wish to notified that a tenclub user would like me to be an accountability partner, and given an explicit opt-in, so that my role is clear and consensual  
     * I wish to receive a succinct text message each time my tenclub accountability buddy (the user) exceeds ten unlocks per day, so that I can hold them accountable in whichever way seems right to me   
-* Functional Requirements:  
-  * Core user experience:  
-    *  V2 Widget:  
-      * Simple iOS homescreen widget to display \[“X” unlocks so far today\]  
-    * App UI  
-      * V1 Simple tab structure:  
-        * Home:  
-          * Display number of unlocks so far today  
-          * If number is \>10, display a message saying “No tenclub today\! Better luck tomorrow  
+* Visual Theme:
+  * The app is themed around a deck of playing cards, with "Tenclub" representing the 10 of Clubs
+  * App icon: 10 of Clubs playing card
+  * Unlock count is displayed as a playing card:
+    * 1 unlock = Ace of Clubs
+    * 2-10 unlocks = Corresponding number card of Clubs
+    * 11+ unlocks = Joker card (with "BUSTED!" message)
+  * The numeric count is also displayed below the card
+  * Home screen widget (V2) will mirror this card display
+
+* Functional Requirements:
+  * Core user experience:
+    *  V2 Widget:
+      * Simple iOS homescreen widget displaying the appropriate playing card based on unlock count
+    * App UI
+      * V1 Simple tab structure:
+        * Home:
+          * Display unlock count as a playing card (Ace through 10 of Clubs, or Joker if >10)
+          * Show numeric count below the card
+          * If number is \>10, display a message saying "No tenclub today\! Better luck tomorrow  
           * Unlock data should be   
           * Note: use the iOS screentime API to obtain unlocks data, and request any permissions from the end user as needed  
         * V3 Settings  
@@ -40,7 +51,7 @@ PRD: Tenclub MVP
       * When a given user has input a valid US phone number for an accountability buddy, send that person a text message (not important what number the message is from), with the following text:  
         * “Hi there, your friend has requested that you help them manage their screentime by acting as their Tenclub accountability buddy. You will receive a text each time they fail to stay within the limit of ten unlocks per day. To accept this request, respond with “YES”, otherwise ignore and you will not be texted. You can text “STOP” at any time to no longer receive messages”  
         * If the buddy inputs “YES”, then, each time the designated user exceeds 10 phone unlocks in a day, send them a message with the following copy:  
-          * “This is the Tenclub accountabilitybot- your friend has exceeded their limit for today- don’t be too hard on them\! (Text STOP to unsubscribe)  
+          * “This is the Tenclub accountabilitybot- yourhkh friend has exceeded their limit for today- don’t be too hard on them\! (Text STOP to unsubscribe)  
   * V4 (do not build for now)  
     * User account registration and management system  
     * Centralized storage of user unlock data per day
