@@ -16,23 +16,27 @@ class ScreenTimeManager: ObservableObject {
 
     @Published var isAuthorized: Bool = false
     @Published var authorizationError: String?
+    @Published var refreshID = UUID()  // Used to trigger report refresh
 
     private let authorizationCenter = AuthorizationCenter.shared
 
     private init() {
         // Check current authorization status
         checkAuthorizationStatus()
+
+        // Observe authorization changes
+        Task {
+            for await status in authorizationCenter.authorizationStatusChanges {
+                await MainActor.run {
+                    self.isAuthorized = (status == .approved)
+                }
+            }
+        }
     }
 
     func checkAuthorizationStatus() {
-        switch authorizationCenter.authorizationStatus {
-        case .approved:
-            isAuthorized = true
-        case .denied, .notDetermined:
-            isAuthorized = false
-        @unknown default:
-            isAuthorized = false
-        }
+        let status = authorizationCenter.authorizationStatus
+        isAuthorized = (status == .approved)
     }
 
     func requestAuthorization() async {
@@ -45,5 +49,10 @@ class ScreenTimeManager: ObservableObject {
             authorizationError = error.localizedDescription
             print("Authorization failed: \(error)")
         }
+    }
+
+    func refreshReport() {
+        // Change the ID to force SwiftUI to recreate the DeviceActivityReport
+        refreshID = UUID()
     }
 }

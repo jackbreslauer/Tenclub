@@ -32,6 +32,10 @@ struct ContentView: View {
                 }
         }
         .environmentObject(screenTimeManager)
+        .onAppear {
+            // Re-check authorization when app appears
+            screenTimeManager.checkAuthorizationStatus()
+        }
     }
 }
 
@@ -57,7 +61,21 @@ struct HomeView: View {
             if screenTimeManager.isAuthorized {
                 // Authorized - show real pickup count from DeviceActivityReport
                 DeviceActivityReport(.totalActivity, filter: todayFilter)
+                    .id(screenTimeManager.refreshID)  // Force refresh when ID changes
                     .frame(height: 150)
+
+                // Refresh button
+                Button {
+                    screenTimeManager.refreshReport()
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.clockwise")
+                        Text("Refresh")
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(.blue)
+                }
+                .padding(.top, 10)
 
                 Spacer()
 
@@ -105,6 +123,10 @@ struct HomeView: View {
             }
         }
         .padding()
+        .onAppear {
+            // Refresh the report when view appears
+            screenTimeManager.refreshReport()
+        }
     }
 }
 
