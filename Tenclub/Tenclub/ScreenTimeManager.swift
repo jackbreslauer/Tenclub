@@ -16,7 +16,6 @@ class ScreenTimeManager: ObservableObject {
 
     @Published var isAuthorized: Bool = false
     @Published var authorizationError: String?
-    @Published var refreshID = UUID()  // Used to trigger report refresh
 
     private let authorizationCenter = AuthorizationCenter.shared
 
@@ -40,10 +39,5 @@ class ScreenTimeManager: ObservableObject {
             authorizationError = error.localizedDescription
             print("Authorization failed: \(error)")
         }
-    }
-
-    func refreshReport() {
-        // Change the ID to force SwiftUI to recreate the DeviceActivityReport
-        refreshID = UUID()
     }
 }

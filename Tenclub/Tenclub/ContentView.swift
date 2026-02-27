@@ -43,15 +43,22 @@ struct ContentView: View {
 struct HomeView: View {
     @EnvironmentObject var screenTimeManager: ScreenTimeManager
 
-    // Filter for today's activity
-    private var todayFilter: DeviceActivityFilter {
+    // Filter as state so we can update it to trigger refresh
+    @State private var activityFilter: DeviceActivityFilter = HomeView.createTodayFilter()
+
+    // Helper to create a fresh filter with current time
+    private static func createTodayFilter() -> DeviceActivityFilter {
         let calendar = Calendar.current
         let now = Date()
         let startOfDay = calendar.startOfDay(for: now)
-
         return DeviceActivityFilter(
             segment: .daily(during: DateInterval(start: startOfDay, end: now))
         )
+    }
+
+    // Refresh by creating a new filter with updated end time
+    private func refreshFilter() {
+        activityFilter = HomeView.createTodayFilter()
     }
 
     var body: some View {
@@ -60,13 +67,12 @@ struct HomeView: View {
 
             if screenTimeManager.isAuthorized {
                 // Authorized - show real pickup count from DeviceActivityReport
-                DeviceActivityReport(.totalActivity, filter: todayFilter)
-                    .id(screenTimeManager.refreshID)  // Force refresh when ID changes
+                DeviceActivityReport(.totalActivity, filter: activityFilter)
                     .frame(height: 150)
 
                 // Refresh button
                 Button {
-                    screenTimeManager.refreshReport()
+                    refreshFilter()
                 } label: {
                     HStack {
                         Image(systemName: "arrow.clockwise")
@@ -124,8 +130,8 @@ struct HomeView: View {
         }
         .padding()
         .onAppear {
-            // Refresh the report when view appears
-            screenTimeManager.refreshReport()
+            // Refresh the filter when view appears to get latest data
+            refreshFilter()
         }
     }
 }
