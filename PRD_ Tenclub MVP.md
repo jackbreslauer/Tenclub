@@ -52,6 +52,10 @@ PRD: Tenclub MVP
         * “Hi there, your friend has requested that you help them manage their screentime by acting as their Tenclub accountability buddy. You will receive a text each time they fail to stay within the limit of ten unlocks per day. To accept this request, respond with “YES”, otherwise ignore and you will not be texted. You can text “STOP” at any time to no longer receive messages”  
         * If the buddy inputs “YES”, then, each time the designated user exceeds 10 phone unlocks in a day, send them a message with the following copy:  
           * “This is the Tenclub accountabilitybot- yourhkh friend has exceeded their limit for today- don’t be too hard on them\! (Text STOP to unsubscribe)  
-  * V4 (do not build for now)  
-    * User account registration and management system  
+  * V4 (do not build for now)
+    * User account registration and management system
     * Centralized storage of user unlock data per day
+
+* Future Considerations:
+  * "Raise to Wake" iPhone setting may inflate pickup counts - consider prompting users to disable it, or adding guidance in onboarding
+  * Refine unlock definition: pickup + usage time > 0 (to exclude lock screen glances)
