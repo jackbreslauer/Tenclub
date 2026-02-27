@@ -7,6 +7,12 @@
 
 import SwiftUI
 import FamilyControls
+import DeviceActivity
+
+// Define the report context (must match what's in the extension)
+extension DeviceActivityReport.Context {
+    static let totalActivity = Self("Total Activity")
+}
 
 struct ContentView: View {
     @StateObject private var screenTimeManager = ScreenTimeManager.shared
@@ -33,52 +39,27 @@ struct ContentView: View {
 struct HomeView: View {
     @EnvironmentObject var screenTimeManager: ScreenTimeManager
 
-    // Mock data for now - will be replaced with real Screen Time data
-    @State private var unlockCount: Int = 7
+    // Filter for today's activity
+    private var todayFilter: DeviceActivityFilter {
+        let calendar = Calendar.current
+        let now = Date()
+        let startOfDay = calendar.startOfDay(for: now)
+
+        return DeviceActivityFilter(
+            segment: .daily(during: DateInterval(start: startOfDay, end: now))
+        )
+    }
 
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
 
             if screenTimeManager.isAuthorized {
-                // Authorized - show playing card
-                PlayingCardView(unlockCount: unlockCount)
-
-                // Show count below card
-                Text("\(unlockCount) unlock\(unlockCount == 1 ? "" : "s") today")
-                    .font(.title3)
-                    .foregroundColor(unlockCount > 10 ? .red : .secondary)
-                    .padding(.top, 8)
-
-                // Warning message if over 10
-                if unlockCount > 10 {
-                    Text("No tenclub today! Better luck tomorrow")
-                        .font(.subheadline)
-                        .foregroundColor(.red)
-                        .padding(.top, 4)
-                }
+                // Authorized - show real pickup count from DeviceActivityReport
+                DeviceActivityReport(.totalActivity, filter: todayFilter)
+                    .frame(height: 150)
 
                 Spacer()
-
-                // Temporary buttons to test the UI (remove later)
-                HStack(spacing: 20) {
-                    Button("−") {
-                        if unlockCount > 0 { unlockCount -= 1 }
-                    }
-                    .font(.title)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
-
-                    Button("+") {
-                        unlockCount += 1
-                    }
-                    .font(.title)
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
-                }
-                .padding(.bottom, 40)
 
             } else {
                 // Not authorized - show request button

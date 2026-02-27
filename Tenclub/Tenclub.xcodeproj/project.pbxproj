@@ -6,11 +6,58 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EFC477182F520D84006EC69F /* TenclubReport.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = EFC4770C2F520D84006EC69F /* TenclubReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EFC477162F520D84006EC69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EFFED3852F3D27BC0091D345 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EFC4770B2F520D84006EC69F;
+			remoteInfo = TenclubReport;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EFC4771D2F520D84006EC69F /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				EFC477182F520D84006EC69F /* TenclubReport.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		EFC4770C2F520D84006EC69F /* TenclubReport.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = TenclubReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFFED38D2F3D27BC0091D345 /* Tenclub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tenclub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EFC477192F520D84006EC69F /* Exceptions for "TenclubReport" folder in "TenclubReport" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EFC4770B2F520D84006EC69F /* TenclubReport */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		EFC4770D2F520D84006EC69F /* TenclubReport */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EFC477192F520D84006EC69F /* Exceptions for "TenclubReport" folder in "TenclubReport" target */,
+			);
+			path = TenclubReport;
+			sourceTree = "<group>";
+		};
 		EFFED38F2F3D27BC0091D345 /* Tenclub */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Tenclub;
@@ -19,6 +66,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		EFC477092F520D84006EC69F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EFFED38A2F3D27BC0091D345 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -33,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				EFFED38F2F3D27BC0091D345 /* Tenclub */,
+				EFC4770D2F520D84006EC69F /* TenclubReport */,
 				EFFED38E2F3D27BC0091D345 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				EFFED38D2F3D27BC0091D345 /* Tenclub.app */,
+				EFC4770C2F520D84006EC69F /* TenclubReport.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +104,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		EFC4770B2F520D84006EC69F /* TenclubReport */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EFC4771A2F520D84006EC69F /* Build configuration list for PBXNativeTarget "TenclubReport" */;
+			buildPhases = (
+				EFC477082F520D84006EC69F /* Sources */,
+				EFC477092F520D84006EC69F /* Frameworks */,
+				EFC4770A2F520D84006EC69F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				EFC4770D2F520D84006EC69F /* TenclubReport */,
+			);
+			name = TenclubReport;
+			packageProductDependencies = (
+			);
+			productName = TenclubReport;
+			productReference = EFC4770C2F520D84006EC69F /* TenclubReport.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
 		EFFED38C2F3D27BC0091D345 /* Tenclub */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EFFED3982F3D27BD0091D345 /* Build configuration list for PBXNativeTarget "Tenclub" */;
@@ -55,10 +133,12 @@
 				EFFED3892F3D27BC0091D345 /* Sources */,
 				EFFED38A2F3D27BC0091D345 /* Frameworks */,
 				EFFED38B2F3D27BC0091D345 /* Resources */,
+				EFC4771D2F520D84006EC69F /* Embed ExtensionKit Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				EFC477172F520D84006EC69F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				EFFED38F2F3D27BC0091D345 /* Tenclub */,
@@ -80,6 +160,9 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					EFC4770B2F520D84006EC69F = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					EFFED38C2F3D27BC0091D345 = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -100,11 +183,19 @@
 			projectRoot = "";
 			targets = (
 				EFFED38C2F3D27BC0091D345 /* Tenclub */,
+				EFC4770B2F520D84006EC69F /* TenclubReport */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		EFC4770A2F520D84006EC69F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EFFED38B2F3D27BC0091D345 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +206,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		EFC477082F520D84006EC69F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EFFED3892F3D27BC0091D345 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,7 +222,78 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		EFC477172F520D84006EC69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EFC4770B2F520D84006EC69F /* TenclubReport */;
+			targetProxy = EFC477162F520D84006EC69F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		EFC4771B2F520D84006EC69F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TenclubReport/TenclubReport.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5FYMK736XC;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TenclubReport/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TenclubReport;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jackbreslauer.Tenclub.TenclubReport;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EFC4771C2F520D84006EC69F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = TenclubReport/TenclubReport.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5FYMK736XC;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TenclubReport/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TenclubReport;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jackbreslauer.Tenclub.TenclubReport;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		EFFED3962F3D27BD0091D345 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -334,6 +503,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		EFC4771A2F520D84006EC69F /* Build configuration list for PBXNativeTarget "TenclubReport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EFC4771B2F520D84006EC69F /* Debug */,
+				EFC4771C2F520D84006EC69F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		EFFED3882F3D27BC0091D345 /* Build configuration list for PBXProject "Tenclub" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
