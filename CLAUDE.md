@@ -16,6 +16,7 @@
 - Tell me when something is optional/nice-to-know vs critical
 - Proactively handle git commits - don't wait for me to ask
 - Raise important architectural or technical decisions as we build
+- Always confirm the next step before writing any code
 
 ## Development Philosophy
 Start with an MVP proof-of-concept. Build sequentially through versions (V1 → V2 → V3 → V4), validating at each point. Use scalable infrastructure and coding practices where possible without overbuilding.

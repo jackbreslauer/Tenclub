@@ -23,15 +23,6 @@ class ScreenTimeManager: ObservableObject {
     private init() {
         // Check current authorization status
         checkAuthorizationStatus()
-
-        // Observe authorization changes
-        Task {
-            for await status in authorizationCenter.authorizationStatusChanges {
-                await MainActor.run {
-                    self.isAuthorized = (status == .approved)
-                }
-            }
-        }
     }
 
     func checkAuthorizationStatus() {
