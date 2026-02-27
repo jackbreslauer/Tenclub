@@ -6,13 +6,14 @@
 //
 
 import DeviceActivity
+import ExtensionKit
 import SwiftUI
 
 @main
 struct TenclubReport: DeviceActivityReportExtension {
     var body: some DeviceActivityReportScene {
-        TotalActivityReport { pickupCount in
-            TotalActivityView(totalActivity: pickupCount)
+        TotalActivityReport { pickupCountString in
+            TotalActivityView(totalActivity: pickupCountString)
         }
     }
 }

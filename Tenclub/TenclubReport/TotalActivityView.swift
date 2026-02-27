@@ -8,22 +8,32 @@
 import SwiftUI
 
 struct TotalActivityView: View {
-    let totalActivity: Int  // Now an Int (pickup count)
+    let totalActivity: String  // Pickup count as string
+
+    private var pickupCount: Int {
+        Int(totalActivity) ?? 0
+    }
 
     var body: some View {
         VStack(spacing: 8) {
-            Text("\(totalActivity)")
+            Text(totalActivity)
                 .font(.system(size: 72, weight: .bold, design: .rounded))
-                .foregroundColor(totalActivity > 10 ? .red : .primary)
+                .foregroundColor(pickupCount > 10 ? .red : .primary)
 
             Text("pickups today")
                 .font(.title3)
                 .foregroundColor(.secondary)
+
+            if pickupCount > 10 {
+                Text("No tenclub today!")
+                    .font(.subheadline)
+                    .foregroundColor(.red)
+            }
         }
         .padding()
     }
 }
 
 #Preview {
-    TotalActivityView(totalActivity: 7)
+    TotalActivityView(totalActivity: "7")
 }
