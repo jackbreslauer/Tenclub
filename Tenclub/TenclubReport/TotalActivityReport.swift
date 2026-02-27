@@ -19,16 +19,20 @@ struct TotalActivityReport: DeviceActivityReportScene {
     let content: (String) -> TotalActivityView
 
     func makeConfiguration(representing data: DeviceActivityResults<DeviceActivityData>) async -> String {
-        // Count the number of activity segments (each segment = one pickup)
-        var pickupCount = 0
+        var totalPickups = 0
 
+        // Navigate the nested structure:
+        // data -> activitySegments -> categories -> applications -> numberOfPickups
         for await deviceData in data {
             for await segment in deviceData.activitySegments {
-                pickupCount += 1
-                print("Segment - Duration: \(segment.totalActivityDuration)")
+                for await category in segment.categories {
+                    for await app in category.applications {
+                        totalPickups += app.numberOfPickups
+                    }
+                }
             }
         }
 
-        return String(pickupCount)
+        return String(totalPickups)
     }
 }
