@@ -46,6 +46,10 @@ struct HomeView: View {
     // Filter as state so we can update it to trigger refresh
     @State private var activityFilter: DeviceActivityFilter = HomeView.createTodayFilter()
 
+    // Controls whether report is visible (toggling forces re-instantiation)
+    @State private var isReportVisible: Bool = true
+    @State private var isRefreshing: Bool = false
+
     // Helper to create a fresh filter with current time
     private static func createTodayFilter() -> DeviceActivityFilter {
         let calendar = Calendar.current
@@ -56,9 +60,17 @@ struct HomeView: View {
         )
     }
 
-    // Refresh by creating a new filter with updated end time
-    private func refreshFilter() {
-        activityFilter = HomeView.createTodayFilter()
+    // Refresh by hiding report, updating filter, then showing again
+    private func refreshReport() {
+        isRefreshing = true
+        isReportVisible = false
+
+        // Brief delay, then show report with fresh filter
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            activityFilter = HomeView.createTodayFilter()
+            isReportVisible = true
+            isRefreshing = false
+        }
     }
 
     var body: some View {
@@ -67,20 +79,27 @@ struct HomeView: View {
 
             if screenTimeManager.isAuthorized {
                 // Authorized - show real pickup count from DeviceActivityReport
-                DeviceActivityReport(.totalActivity, filter: activityFilter)
-                    .frame(height: 150)
+                if isReportVisible {
+                    DeviceActivityReport(.totalActivity, filter: activityFilter)
+                        .frame(height: 150)
+                } else {
+                    // Loading placeholder while refreshing
+                    ProgressView()
+                        .frame(height: 150)
+                }
 
                 // Refresh button
                 Button {
-                    refreshFilter()
+                    refreshReport()
                 } label: {
                     HStack {
                         Image(systemName: "arrow.clockwise")
-                        Text("Refresh")
+                        Text(isRefreshing ? "Refreshing..." : "Refresh")
                     }
                     .font(.subheadline)
                     .foregroundColor(.blue)
                 }
+                .disabled(isRefreshing)
                 .padding(.top, 10)
 
                 Spacer()
@@ -129,10 +148,6 @@ struct HomeView: View {
             }
         }
         .padding()
-        .onAppear {
-            // Refresh the filter when view appears to get latest data
-            refreshFilter()
-        }
     }
 }
 
