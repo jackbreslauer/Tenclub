@@ -18,17 +18,16 @@ PRD: Tenclub MVP
 * Visual Theme:
   * The app is themed around a deck of playing cards, with "Tenclub" representing the 10 of Clubs
   * App icon: 10 of Clubs playing card
-  * Unlock count is displayed as a playing card:
-    * 1 unlock = Ace of Clubs
-    * 2-10 unlocks = Corresponding number card of Clubs
-    * 11+ unlocks = Joker card (with "BUSTED!" message)
-  * The numeric count is also displayed below the card
-  * Home screen widget (V2) will mirror this card display
+  * Pickup count displayed as playing cards:
+    * 1-9 pickups = Single card (Ace through 9), randomly rotating between suits
+    * 10-99 pickups = Two cards side by side (tens digit + ones digit)
+    * 100+ pickups = Plain numbers
+  * Card images: Using open source vector playing cards (LGPL 3.0)
 
 * Functional Requirements:
   * Core user experience:
     *  V2 Widget:
-      * Simple iOS homescreen widget displaying the appropriate playing card based on unlock count
+      * **BLOCKED:** Apple's DeviceActivityReport extension is sandboxed and cannot share pickup data with widgets. No known workaround exists. Widget deferred until Apple opens up the API.
     * App UI
       * V1 Simple tab structure:
         * Home:
@@ -56,6 +55,13 @@ PRD: Tenclub MVP
     * User account registration and management system
     * Centralized storage of user unlock data per day
 
+* Technical Notes & Known Limitations:
+  * **Terminology:** Apple's API tracks "pickups" (screen wake events), not true "unlocks" (authentication events). These are close but not identical.
+  * **Data refresh:** iOS caches DeviceActivityReport data for ~1-5 minutes. App auto-refreshes on foreground return. Real-time updates not possible with current approach.
+  * **Real-time alternative:** Apps like Offscreen achieve instant updates using background location permission (to keep app alive) and tracking pickups independently. Tradeoff: requires "Always" location permission, ~3-8% additional daily battery drain.
+  * **Widget limitation:** DeviceActivityReport cannot be embedded in WidgetKit widgets (Apple confirmed this is unsupported).
+
 * Future Considerations:
   * "Raise to Wake" iPhone setting may inflate pickup counts - consider prompting users to disable it, or adding guidance in onboarding
   * Refine unlock definition: pickup + usage time > 0 (to exclude lock screen glances)
+  * If data refresh delay proves problematic, consider adding location-based feature (e.g., "walking while using") to justify background location permission
