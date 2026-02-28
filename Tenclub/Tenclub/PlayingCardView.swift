@@ -2,50 +2,114 @@
 //  PlayingCardView.swift
 //  Tenclub
 //
-//  A SwiftUI view that displays a playing card based on unlock count
+//  A SwiftUI view that displays playing cards based on pickup count
 //
 
 import SwiftUI
 
+// MARK: - Main Pickup Display
 struct PlayingCardView: View {
     let unlockCount: Int
 
-    // Card dimensions (standard playing card ratio is roughly 2.5:3.5)
-    private let cardWidth: CGFloat = 200
-    private var cardHeight: CGFloat { cardWidth * 1.4 }
-
-    private var isJoker: Bool { unlockCount > 10 }
-
-    private var cardLabel: String {
-        if isJoker {
-            return "JOKER"
-        } else if unlockCount == 1 {
-            return "A"
+    var body: some View {
+        if unlockCount >= 100 {
+            // 100+: Plain numbers
+            PlainNumberView(count: unlockCount)
+        } else if unlockCount >= 10 {
+            // 10-99: Two cards side by side
+            DoubleCardView(count: unlockCount)
         } else {
-            return "\(unlockCount)"
+            // 1-9: Single card
+            SingleCardView(value: unlockCount, size: .large)
         }
+    }
+}
+
+// MARK: - Plain Number View (100+)
+struct PlainNumberView: View {
+    let count: Int
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Text("\(count)")
+                .font(.system(size: 72, weight: .bold, design: .rounded))
+            Text("pickups")
+                .font(.title3)
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+// MARK: - Double Card View (10-99)
+struct DoubleCardView: View {
+    let count: Int
+
+    private var tensDigit: Int { count / 10 }
+    private var onesDigit: Int { count % 10 }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Tens column
+            SingleCardView(value: tensDigit, size: .small)
+
+            // Ones column (0 becomes 10)
+            SingleCardView(value: onesDigit == 0 ? 10 : onesDigit, size: .small)
+        }
+    }
+}
+
+// MARK: - Single Card View
+enum CardSize {
+    case large
+    case small
+
+    var width: CGFloat {
+        switch self {
+        case .large: return 200
+        case .small: return 120
+        }
+    }
+
+    var height: CGFloat { width * 1.4 }
+
+    var labelFont: CGFloat {
+        switch self {
+        case .large: return 24
+        case .small: return 18
+        }
+    }
+
+    var suitFont: CGFloat {
+        switch self {
+        case .large: return 18
+        case .small: return 14
+        }
+    }
+}
+
+struct SingleCardView: View {
+    let value: Int  // 1-10 (1 = Ace, 10 = 10)
+    let size: CardSize
+
+    private var label: String {
+        value == 1 ? "A" : "\(value)"
     }
 
     var body: some View {
         ZStack {
             // Card background
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: size == .large ? 12 : 8)
                 .fill(Color.white)
-                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                .shadow(color: .black.opacity(0.2), radius: size == .large ? 8 : 4, x: 0, y: 2)
 
             // Card border
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: size == .large ? 12 : 8)
                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
 
-            if isJoker {
-                // Joker card design
-                JokerCardContent()
-            } else {
-                // Number/Ace card design
-                ClubCardContent(label: cardLabel, count: unlockCount)
-            }
+            // Card content
+            ClubCardContent(label: label, count: value, size: size)
         }
-        .frame(width: cardWidth, height: cardHeight)
+        .frame(width: size.width, height: size.height)
     }
 }
 
@@ -53,32 +117,33 @@ struct PlayingCardView: View {
 struct ClubCardContent: View {
     let label: String
     let count: Int
+    let size: CardSize
 
     var body: some View {
         ZStack {
             // Top-left corner
             VStack(spacing: 2) {
                 Text(label)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: size.labelFont, weight: .bold, design: .rounded))
                 Text("♣")
-                    .font(.system(size: 18))
+                    .font(.system(size: size.suitFont))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(12)
+            .padding(size == .large ? 12 : 8)
 
             // Bottom-right corner (upside down)
             VStack(spacing: 2) {
                 Text("♣")
-                    .font(.system(size: 18))
+                    .font(.system(size: size.suitFont))
                 Text(label)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: size.labelFont, weight: .bold, design: .rounded))
             }
             .rotationEffect(.degrees(180))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            .padding(12)
+            .padding(size == .large ? 12 : 8)
 
             // Center club symbols
-            CenterClubPattern(count: count)
+            CenterClubPattern(count: count, size: size)
         }
         .foregroundColor(.black)
     }
@@ -87,126 +152,91 @@ struct ClubCardContent: View {
 // MARK: - Center Club Pattern
 struct CenterClubPattern: View {
     let count: Int
+    let size: CardSize
+
+    // Scale factor for small cards
+    private var scale: CGFloat { size == .large ? 1.0 : 0.6 }
 
     var body: some View {
         if count == 1 {
             // Ace - one large club
             Text("♣")
-                .font(.system(size: 80))
+                .font(.system(size: 80 * scale))
         } else if count <= 3 {
             // 2-3: vertical column
-            VStack(spacing: 20) {
+            VStack(spacing: 20 * scale) {
                 ForEach(0..<count, id: \.self) { _ in
                     Text("♣")
-                        .font(.system(size: 36))
+                        .font(.system(size: 36 * scale))
                 }
             }
         } else if count <= 6 {
             // 4-6: two columns
-            HStack(spacing: 40) {
-                VStack(spacing: 15) {
+            HStack(spacing: 40 * scale) {
+                VStack(spacing: 15 * scale) {
                     ForEach(0..<(count + 1) / 2, id: \.self) { _ in
                         Text("♣")
-                            .font(.system(size: 28))
+                            .font(.system(size: 28 * scale))
                     }
                 }
-                VStack(spacing: 15) {
+                VStack(spacing: 15 * scale) {
                     ForEach(0..<count / 2, id: \.self) { _ in
                         Text("♣")
-                            .font(.system(size: 28))
+                            .font(.system(size: 28 * scale))
                     }
                 }
             }
         } else {
-            // 7-10: simplified pattern with number
-            VStack(spacing: 8) {
-                HStack(spacing: 30) {
-                    Text("♣").font(.system(size: 24))
-                    Text("♣").font(.system(size: 24))
+            // 7-10: simplified pattern
+            VStack(spacing: 8 * scale) {
+                HStack(spacing: 30 * scale) {
+                    Text("♣").font(.system(size: 24 * scale))
+                    Text("♣").font(.system(size: 24 * scale))
                 }
                 Text("♣")
-                    .font(.system(size: 50))
-                HStack(spacing: 30) {
-                    Text("♣").font(.system(size: 24))
-                    Text("♣").font(.system(size: 24))
+                    .font(.system(size: 50 * scale))
+                HStack(spacing: 30 * scale) {
+                    Text("♣").font(.system(size: 24 * scale))
+                    Text("♣").font(.system(size: 24 * scale))
                 }
-            }
-        }
-    }
-}
-
-// MARK: - Joker Card Content
-struct JokerCardContent: View {
-    var body: some View {
-        ZStack {
-            // Top-left corner
-            VStack(spacing: 2) {
-                Text("J")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
-                Text("O")
-                    .font(.system(size: 14, weight: .bold))
-                Text("K")
-                    .font(.system(size: 14, weight: .bold))
-                Text("E")
-                    .font(.system(size: 14, weight: .bold))
-                Text("R")
-                    .font(.system(size: 14, weight: .bold))
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .padding(12)
-            .foregroundColor(.red)
-
-            // Bottom-right corner (upside down)
-            VStack(spacing: 2) {
-                Text("R")
-                    .font(.system(size: 14, weight: .bold))
-                Text("E")
-                    .font(.system(size: 14, weight: .bold))
-                Text("K")
-                    .font(.system(size: 14, weight: .bold))
-                Text("O")
-                    .font(.system(size: 14, weight: .bold))
-                Text("J")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
-            }
-            .rotationEffect(.degrees(180))
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            .padding(12)
-            .foregroundColor(.red)
-
-            // Center jester symbol
-            VStack(spacing: 4) {
-                Text("🃏")
-                    .font(.system(size: 60))
-                Text("BUSTED!")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundColor(.red)
             }
         }
     }
 }
 
 // MARK: - Preview
-#Preview("Ace") {
+#Preview("Ace (1)") {
     PlayingCardView(unlockCount: 1)
         .padding()
         .background(Color.gray.opacity(0.2))
 }
 
-#Preview("Five") {
+#Preview("Five (5)") {
     PlayingCardView(unlockCount: 5)
         .padding()
         .background(Color.gray.opacity(0.2))
 }
 
-#Preview("Ten") {
+#Preview("Ten (10)") {
     PlayingCardView(unlockCount: 10)
         .padding()
         .background(Color.gray.opacity(0.2))
 }
 
-#Preview("Joker (11+)") {
-    PlayingCardView(unlockCount: 15)
+#Preview("Twenty-three (23)") {
+    PlayingCardView(unlockCount: 23)
+        .padding()
+        .background(Color.gray.opacity(0.2))
+}
+
+#Preview("Fifty (50)") {
+    PlayingCardView(unlockCount: 50)
+        .padding()
+        .background(Color.gray.opacity(0.2))
+}
+
+#Preview("Hundred+ (150)") {
+    PlayingCardView(unlockCount: 150)
         .padding()
         .background(Color.gray.opacity(0.2))
 }
