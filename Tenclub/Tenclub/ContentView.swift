@@ -42,13 +42,13 @@ struct ContentView: View {
 // MARK: - Home View
 struct HomeView: View {
     @EnvironmentObject var screenTimeManager: ScreenTimeManager
+    @Environment(\.scenePhase) private var scenePhase
 
     // Filter as state so we can update it to trigger refresh
     @State private var activityFilter: DeviceActivityFilter = HomeView.createTodayFilter()
 
     // Controls whether report is visible (toggling forces re-instantiation)
     @State private var isReportVisible: Bool = true
-    @State private var isRefreshing: Bool = false
 
     // Helper to create a fresh filter with current time
     private static func createTodayFilter() -> DeviceActivityFilter {
@@ -62,14 +62,12 @@ struct HomeView: View {
 
     // Refresh by hiding report, updating filter, then showing again
     private func refreshReport() {
-        isRefreshing = true
         isReportVisible = false
 
         // Brief delay, then show report with fresh filter
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             activityFilter = HomeView.createTodayFilter()
             isReportVisible = true
-            isRefreshing = false
         }
     }
 
@@ -87,20 +85,6 @@ struct HomeView: View {
                     ProgressView()
                         .frame(height: 150)
                 }
-
-                // Refresh button
-                Button {
-                    refreshReport()
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.clockwise")
-                        Text(isRefreshing ? "Refreshing..." : "Refresh")
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(.blue)
-                }
-                .disabled(isRefreshing)
-                .padding(.top, 10)
 
                 Spacer()
 
@@ -148,6 +132,12 @@ struct HomeView: View {
             }
         }
         .padding()
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            // Auto-refresh when app returns to foreground
+            if newPhase == .active {
+                refreshReport()
+            }
+        }
     }
 }
 
