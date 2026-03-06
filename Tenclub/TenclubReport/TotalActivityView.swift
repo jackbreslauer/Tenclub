@@ -8,24 +8,140 @@
 import SwiftUI
 
 struct TotalActivityView: View {
-    let totalActivity: String  // Pickup count as string
+    let totalActivity: String  // JSON-encoded [DailyPickups]
 
-    private var pickupCount: Int {
-        Int(totalActivity) ?? 0
+    private var dailyData: [DailyPickups] {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let data = totalActivity.data(using: .utf8),
+              let decoded = try? decoder.decode([DailyPickups].self, from: data) else {
+            return []
+        }
+        return decoded
+    }
+
+    private var todayPickups: Int {
+        guard let today = dailyData.first,
+              Calendar.current.isDateInToday(today.date) else {
+            return 0
+        }
+        return today.count
+    }
+
+    private var historyData: [DailyPickups] {
+        // Skip today, show past days
+        dailyData.dropFirst().filter { !Calendar.current.isDateInToday($0.date) }
     }
 
     var body: some View {
-        VStack(spacing: 8) {
-            PickupCardDisplay(count: pickupCount)
+        ScrollView {
+            VStack(spacing: 16) {
+                // Today's count - prominent display
+                todaySection
 
-            if pickupCount > 10 {
+                // History section
+                if !historyData.isEmpty {
+                    historySection
+                }
+            }
+            .padding()
+        }
+    }
+
+    // MARK: - Today Section
+    private var todaySection: some View {
+        VStack(spacing: 8) {
+            Text("Today")
+                .font(.headline)
+                .foregroundColor(.secondary)
+
+            PickupCardDisplay(count: todayPickups)
+
+            if todayPickups > 10 {
                 Text("No tenclub today!")
                     .font(.subheadline)
                     .foregroundColor(.red)
                     .padding(.top, 4)
+            } else if todayPickups > 0 {
+                Text("\(10 - todayPickups) remaining")
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+                    .padding(.top, 4)
             }
         }
         .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+    }
+
+    // MARK: - History Section
+    private var historySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("History")
+                .font(.headline)
+                .foregroundColor(.secondary)
+
+            ForEach(historyData, id: \.date) { day in
+                HistoryRow(dailyPickups: day)
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - History Row
+struct HistoryRow: View {
+    let dailyPickups: DailyPickups
+
+    private var dayLabel: String {
+        let calendar = Calendar.current
+        if calendar.isDateInYesterday(dailyPickups.date) {
+            return "Yesterday"
+        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"  // Day name
+        return formatter.string(from: dailyPickups.date)
+    }
+
+    private var dateLabel: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: dailyPickups.date)
+    }
+
+    private var madeTenclub: Bool {
+        dailyPickups.count <= 10 && dailyPickups.count > 0
+    }
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(dayLabel)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(dateLabel)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            HStack(spacing: 6) {
+                Text("\(dailyPickups.count)")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundColor(madeTenclub ? .green : .primary)
+
+                if madeTenclub {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.subheadline)
+                }
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 
@@ -50,18 +166,20 @@ struct PickupCardDisplay: View {
                 MiniCardView(value: count % 10 == 0 ? 10 : count % 10)  // Ones digit
             }
         } else {
-            // 1-9: Single card
-            MiniCardView(value: count)
+            // 0-9: Single card
+            MiniCardView(value: max(count, 0))
         }
     }
 }
 
 // MARK: - Mini Card View (for extension)
 struct MiniCardView: View {
-    let value: Int  // 1-10
+    let value: Int  // 0-10
 
     private var label: String {
-        value == 1 ? "A" : "\(value)"
+        if value == 0 { return "0" }
+        if value == 1 { return "A" }
+        return "\(value)"
     }
 
     var body: some View {
@@ -88,14 +206,22 @@ struct MiniCardView: View {
     }
 }
 
-#Preview("Single digit") {
-    TotalActivityView(totalActivity: "7")
+// MARK: - DailyPickups (shared with report)
+struct DailyPickups: Codable {
+    let date: Date
+    let count: Int
 }
 
-#Preview("Double digit") {
-    TotalActivityView(totalActivity: "23")
-}
+#Preview("With history") {
+    let sampleData: [DailyPickups] = [
+        DailyPickups(date: Date(), count: 7),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, count: 12),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, count: 8),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -3, to: Date())!, count: 15),
+    ]
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    let json = String(data: try! encoder.encode(sampleData), encoding: .utf8)!
 
-#Preview("Triple digit") {
-    TotalActivityView(totalActivity: "150")
+    return TotalActivityView(totalActivity: json)
 }

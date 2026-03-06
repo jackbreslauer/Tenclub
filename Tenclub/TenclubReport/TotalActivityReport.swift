@@ -19,32 +19,40 @@ struct TotalActivityReport: DeviceActivityReportScene {
     let content: (String) -> TotalActivityView
 
     func makeConfiguration(representing data: DeviceActivityResults<DeviceActivityData>) async -> String {
-        var totalPickups = 0
+        var dailyPickups: [DailyPickups] = []
 
         // Navigate the nested structure:
-        // data -> activitySegments -> categories -> applications -> numberOfPickups
+        // data -> activitySegments (one per day with .daily filter)
         for await deviceData in data {
             for await segment in deviceData.activitySegments {
+                var segmentPickups = 0
+
+                // Sum pickups across all categories and apps for this segment
                 for await category in segment.categories {
                     for await app in category.applications {
-                        totalPickups += app.numberOfPickups
+                        segmentPickups += app.numberOfPickups
                     }
                 }
+
+                // Add this day's data
+                dailyPickups.append(DailyPickups(
+                    date: segment.dateInterval.start,
+                    count: segmentPickups
+                ))
             }
         }
 
-        // EXPERIMENT: Try writing to App Group
-        if let sharedDefaults = UserDefaults(suiteName: "group.com.jackbreslauer.Tenclub") {
-            let today = Calendar.current.startOfDay(for: Date())
-            let dateKey = ISO8601DateFormatter().string(from: today)
+        // Sort by date descending (most recent first)
+        dailyPickups.sort { $0.date > $1.date }
 
-            // Save today's pickup count
-            sharedDefaults.set(totalPickups, forKey: "pickups_\(dateKey)")
-            sharedDefaults.set(totalPickups, forKey: "latestPickupCount")
-            sharedDefaults.set(Date(), forKey: "lastUpdated")
-            sharedDefaults.synchronize()
+        // Encode as JSON string to pass to view
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        if let jsonData = try? encoder.encode(dailyPickups),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            return jsonString
         }
 
-        return String(totalPickups)
+        return "[]"
     }
 }
