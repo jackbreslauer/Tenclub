@@ -33,6 +33,18 @@ struct TotalActivityReport: DeviceActivityReportScene {
             }
         }
 
+        // EXPERIMENT: Try writing to App Group
+        if let sharedDefaults = UserDefaults(suiteName: "group.com.jackbreslauer.Tenclub") {
+            let today = Calendar.current.startOfDay(for: Date())
+            let dateKey = ISO8601DateFormatter().string(from: today)
+
+            // Save today's pickup count
+            sharedDefaults.set(totalPickups, forKey: "pickups_\(dateKey)")
+            sharedDefaults.set(totalPickups, forKey: "latestPickupCount")
+            sharedDefaults.set(Date(), forKey: "lastUpdated")
+            sharedDefaults.synchronize()
+        }
+
         return String(totalPickups)
     }
 }

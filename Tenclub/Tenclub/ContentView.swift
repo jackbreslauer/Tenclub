@@ -144,6 +144,10 @@ struct HomeView: View {
 // MARK: - Settings View
 struct SettingsView: View {
     @EnvironmentObject var screenTimeManager: ScreenTimeManager
+    @State private var sharedPickupCount: Int?
+    @State private var lastUpdated: Date?
+
+    private let sharedDefaults = UserDefaults(suiteName: "group.com.jackbreslauer.Tenclub")
 
     var body: some View {
         NavigationView {
@@ -157,12 +161,56 @@ struct SettingsView: View {
                     }
                 }
 
+                // Debug section to test App Group
+                Section("App Group Test") {
+                    HStack {
+                        Text("Shared Pickup Count")
+                        Spacer()
+                        if let count = sharedPickupCount {
+                            Text("\(count)")
+                                .foregroundColor(.green)
+                        } else {
+                            Text("Not set")
+                                .foregroundColor(.red)
+                        }
+                    }
+
+                    HStack {
+                        Text("Last Updated")
+                        Spacer()
+                        if let date = lastUpdated {
+                            Text(date, style: .time)
+                                .foregroundColor(.green)
+                        } else {
+                            Text("Never")
+                                .foregroundColor(.red)
+                        }
+                    }
+
+                    Button("Refresh from App Group") {
+                        loadSharedData()
+                    }
+                }
+
                 Section {
                     Text("Accountability buddy feature coming in V3")
                         .foregroundColor(.secondary)
                 }
             }
             .navigationTitle("Settings")
+            .onAppear {
+                loadSharedData()
+            }
+        }
+    }
+
+    private func loadSharedData() {
+        sharedPickupCount = sharedDefaults?.integer(forKey: "latestPickupCount")
+        lastUpdated = sharedDefaults?.object(forKey: "lastUpdated") as? Date
+
+        // If value is 0 and was never set, show nil instead
+        if sharedPickupCount == 0 && sharedDefaults?.object(forKey: "latestPickupCount") == nil {
+            sharedPickupCount = nil
         }
     }
 }
