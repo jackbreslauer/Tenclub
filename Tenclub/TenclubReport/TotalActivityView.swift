@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct TotalActivityView: View {
     let totalActivity: String  // JSON-encoded [DailyPickups]
@@ -28,24 +29,12 @@ struct TotalActivityView: View {
         return today.count
     }
 
-    private var historyData: [DailyPickups] {
-        // Skip today, show past days
-        dailyData.dropFirst().filter { !Calendar.current.isDateInToday($0.date) }
-    }
-
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                // Today's count - prominent display
-                todaySection
-
-                // History section
-                if !historyData.isEmpty {
-                    historySection
-                }
-            }
-            .padding()
+        VStack(spacing: 16) {
+            // Today's count - prominent display
+            todaySection
         }
+        .padding()
     }
 
     // MARK: - Today Section
@@ -72,76 +61,6 @@ struct TotalActivityView: View {
         .padding()
         .background(Color(.systemBackground))
         .cornerRadius(12)
-    }
-
-    // MARK: - History Section
-    private var historySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("History")
-                .font(.headline)
-                .foregroundColor(.secondary)
-
-            ForEach(historyData, id: \.date) { day in
-                HistoryRow(dailyPickups: day)
-            }
-        }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - History Row
-struct HistoryRow: View {
-    let dailyPickups: DailyPickups
-
-    private var dayLabel: String {
-        let calendar = Calendar.current
-        if calendar.isDateInYesterday(dailyPickups.date) {
-            return "Yesterday"
-        }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE"  // Day name
-        return formatter.string(from: dailyPickups.date)
-    }
-
-    private var dateLabel: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: dailyPickups.date)
-    }
-
-    private var madeTenclub: Bool {
-        dailyPickups.count <= 10 && dailyPickups.count > 0
-    }
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(dayLabel)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Text(dateLabel)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
-
-            HStack(spacing: 6) {
-                Text("\(dailyPickups.count)")
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundColor(madeTenclub ? .green : .primary)
-
-                if madeTenclub {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                        .font(.subheadline)
-                }
-            }
-        }
-        .padding(.vertical, 4)
     }
 }
 
@@ -212,16 +131,95 @@ struct DailyPickups: Codable {
     let count: Int
 }
 
-#Preview("With history") {
+// MARK: - History Chart View
+struct HistoryChartView: View {
+    let dailyPickupsJSON: String
+
+    private var dailyData: [DailyPickups] {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let data = dailyPickupsJSON.data(using: .utf8),
+              let decoded = try? decoder.decode([DailyPickups].self, from: data) else {
+            return []
+        }
+        // Sort by date ascending (oldest first, most recent on right)
+        return decoded.sorted { $0.date < $1.date }
+    }
+
+    private var maxYValue: Int {
+        let maxCount = dailyData.map { $0.count }.max() ?? 0
+        // Round up to nearest multiple of 5
+        return ((maxCount / 5) + 1) * 5
+    }
+
+    private func dateLabel(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+
+    private func madeTenclub(_ count: Int) -> Bool {
+        count <= 10 && count > 0
+    }
+
+    var body: some View {
+        VStack(spacing: 16) {
+            if dailyData.isEmpty {
+                Text("No data available")
+                    .foregroundColor(.secondary)
+            } else {
+                Chart {
+                    ForEach(dailyData, id: \.date) { day in
+                        BarMark(
+                            x: .value("Date", dateLabel(for: day.date)),
+                            y: .value("Pickups", day.count)
+                        )
+                        .foregroundStyle(madeTenclub(day.count) ? Color.green : Color.gray)
+                        .annotation(position: .top) {
+                            if madeTenclub(day.count) {
+                                Text("♣")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.black)
+                            }
+                        }
+                    }
+                }
+                .chartYScale(domain: 0...maxYValue)
+                .chartYAxis {
+                    AxisMarks(position: .leading, values: .stride(by: 5))
+                }
+                .frame(height: 250)
+                .padding()
+            }
+        }
+        .padding()
+    }
+}
+
+#Preview("Today") {
     let sampleData: [DailyPickups] = [
         DailyPickups(date: Date(), count: 7),
-        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, count: 12),
-        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, count: 8),
-        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -3, to: Date())!, count: 15),
     ]
     let encoder = JSONEncoder()
     encoder.dateEncodingStrategy = .iso8601
     let json = String(data: try! encoder.encode(sampleData), encoding: .utf8)!
 
     return TotalActivityView(totalActivity: json)
+}
+
+#Preview("History Chart") {
+    let sampleData: [DailyPickups] = [
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -6, to: Date())!, count: 8),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, count: 15),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -4, to: Date())!, count: 6),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -3, to: Date())!, count: 22),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, count: 10),
+        DailyPickups(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, count: 12),
+        DailyPickups(date: Date(), count: 5),
+    ]
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    let json = String(data: try! encoder.encode(sampleData), encoding: .utf8)!
+
+    return HistoryChartView(dailyPickupsJSON: json)
 }

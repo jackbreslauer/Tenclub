@@ -9,9 +9,10 @@ import SwiftUI
 import FamilyControls
 import DeviceActivity
 
-// Define the report context (must match what's in the extension)
+// Define the report contexts (must match what's in the extension)
 extension DeviceActivityReport.Context {
     static let totalActivity = Self("Total Activity")
+    static let historyChart = Self("History Chart")
 }
 
 struct ContentView: View {
@@ -23,6 +24,12 @@ struct ContentView: View {
                 .tabItem {
                     Image(systemName: "house")
                     Text("Home")
+                }
+
+            HistoryView()
+                .tabItem {
+                    Image(systemName: "clock")
+                    Text("History")
                 }
 
             SettingsView()
@@ -44,19 +51,19 @@ struct HomeView: View {
     @EnvironmentObject var screenTimeManager: ScreenTimeManager
     @Environment(\.scenePhase) private var scenePhase
 
-    // Filter as state so we can update it to trigger refresh
-    @State private var activityFilter: DeviceActivityFilter = HomeView.createHistoryFilter()
+    // Filter for today only
+    @State private var activityFilter: DeviceActivityFilter = HomeView.createTodayFilter()
 
     // Controls whether report is visible (toggling forces re-instantiation)
     @State private var isReportVisible: Bool = true
 
-    // Helper to create a filter for the last 14 days with daily segments
-    private static func createHistoryFilter() -> DeviceActivityFilter {
+    // Helper to create a filter for today only
+    private static func createTodayFilter() -> DeviceActivityFilter {
         let calendar = Calendar.current
         let now = Date()
-        let fourteenDaysAgo = calendar.date(byAdding: .day, value: -13, to: calendar.startOfDay(for: now))!
+        let startOfToday = calendar.startOfDay(for: now)
         return DeviceActivityFilter(
-            segment: .daily(during: DateInterval(start: fourteenDaysAgo, end: now))
+            segment: .daily(during: DateInterval(start: startOfToday, end: now))
         )
     }
 
@@ -66,7 +73,7 @@ struct HomeView: View {
 
         // Brief delay, then show report with fresh filter
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            activityFilter = HomeView.createHistoryFilter()
+            activityFilter = HomeView.createTodayFilter()
             isReportVisible = true
         }
     }
@@ -74,7 +81,7 @@ struct HomeView: View {
     var body: some View {
         VStack(spacing: 20) {
             if screenTimeManager.isAuthorized {
-                // Authorized - show pickup count and history from DeviceActivityReport
+                // Authorized - show today's pickup count from DeviceActivityReport
                 if isReportVisible {
                     DeviceActivityReport(.totalActivity, filter: activityFilter)
                 } else {
@@ -129,6 +136,61 @@ struct HomeView: View {
         .padding()
         .onChange(of: scenePhase) { oldPhase, newPhase in
             // Auto-refresh when app returns to foreground
+            if newPhase == .active {
+                refreshReport()
+            }
+        }
+    }
+}
+
+// MARK: - History View
+struct HistoryView: View {
+    @EnvironmentObject var screenTimeManager: ScreenTimeManager
+    @Environment(\.scenePhase) private var scenePhase
+
+    // Filter for last 7 days
+    @State private var activityFilter: DeviceActivityFilter = HistoryView.createWeekFilter()
+
+    // Controls whether report is visible (toggling forces re-instantiation)
+    @State private var isReportVisible: Bool = true
+
+    // Helper to create a filter for the last 7 days with daily segments
+    private static func createWeekFilter() -> DeviceActivityFilter {
+        let calendar = Calendar.current
+        let now = Date()
+        let sevenDaysAgo = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: now))!
+        return DeviceActivityFilter(
+            segment: .daily(during: DateInterval(start: sevenDaysAgo, end: now))
+        )
+    }
+
+    // Refresh by hiding report, updating filter, then showing again
+    private func refreshReport() {
+        isReportVisible = false
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            activityFilter = HistoryView.createWeekFilter()
+            isReportVisible = true
+        }
+    }
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                if screenTimeManager.isAuthorized {
+                    if isReportVisible {
+                        DeviceActivityReport(.historyChart, filter: activityFilter)
+                    } else {
+                        ProgressView()
+                    }
+                } else {
+                    Text("Screen Time access required")
+                        .foregroundColor(.secondary)
+                }
+            }
+            .navigationTitle("History")
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
                 refreshReport()
             }

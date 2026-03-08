@@ -31,11 +31,19 @@ PRD: Tenclub MVP
     * App UI
       * V1 Simple tab structure:
         * Home:
-          * Display unlock count as a playing card (Ace through 10 of Clubs, or Joker if >10)
-          * Show numeric count below the card
-          * If number is \>10, display a message saying "No tenclub today\! Better luck tomorrow  
-          * Unlock data should be   
-          * Note: use the iOS screentime API to obtain unlocks data, and request any permissions from the end user as needed  
+          * Display today's pickup count as a playing card (Ace through 10 of Clubs)
+          * For counts 10-99: Two cards side by side (tens digit + ones digit)
+          * For counts 100+: Plain numeric display
+          * If count ≤10: Show "X remaining" in green
+          * If count >10: Show "No tenclub today!" in red
+          * Note: use the iOS screentime API to obtain unlocks data, and request any permissions from the end user as needed
+        * History:
+          * Bar chart showing last 7 days of pickup data
+          * X-axis: Date labels in M/D format, most recent day on the right
+          * Y-axis: Pickup count, max value rounded up to nearest multiple of 5
+          * All 7 days visible without scrolling
+          * Days with ≤10 pickups: Display club symbol (♣) above the bar and green bar color
+          * Days with >10 pickups: Gray bar color, no symbol
         * V3 Settings  
           * For now, this will only include the optional designation of an accountability buddy  
           * If no buddy has been designated, show text saying “Enter phone number of accountability buddy” (optional)  

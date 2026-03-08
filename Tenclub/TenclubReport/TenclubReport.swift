@@ -15,5 +15,8 @@ struct TenclubReport: DeviceActivityReportExtension {
         TotalActivityReport { pickupCountString in
             TotalActivityView(totalActivity: pickupCountString)
         }
+        HistoryChartReport { pickupCountString in
+            HistoryChartView(dailyPickupsJSON: pickupCountString)
+        }
     }
 }

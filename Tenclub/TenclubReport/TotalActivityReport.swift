@@ -11,6 +11,7 @@ import SwiftUI
 
 extension DeviceActivityReport.Context {
     static let totalActivity = Self("Total Activity")
+    static let historyChart = Self("History Chart")
 }
 
 struct TotalActivityReport: DeviceActivityReportScene {
@@ -19,6 +20,11 @@ struct TotalActivityReport: DeviceActivityReportScene {
     let content: (String) -> TotalActivityView
 
     func makeConfiguration(representing data: DeviceActivityResults<DeviceActivityData>) async -> String {
+        await Self.extractDailyPickups(from: data)
+    }
+
+    // Shared helper to extract daily pickups from data
+    static func extractDailyPickups(from data: DeviceActivityResults<DeviceActivityData>) async -> String {
         var dailyPickups: [DailyPickups] = []
 
         // Navigate the nested structure:
@@ -54,5 +60,15 @@ struct TotalActivityReport: DeviceActivityReportScene {
         }
 
         return "[]"
+    }
+}
+
+struct HistoryChartReport: DeviceActivityReportScene {
+    let context: DeviceActivityReport.Context = .historyChart
+
+    let content: (String) -> HistoryChartView
+
+    func makeConfiguration(representing data: DeviceActivityResults<DeviceActivityData>) async -> String {
+        await TotalActivityReport.extractDailyPickups(from: data)
     }
 }
