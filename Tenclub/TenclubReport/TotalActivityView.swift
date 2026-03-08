@@ -92,36 +92,68 @@ struct PickupCardDisplay: View {
 }
 
 // MARK: - Mini Card View (for extension)
+// Renders playing cards in Atlas deck style
 struct MiniCardView: View {
     let value: Int  // 0-10
 
     private var label: String {
         if value == 0 { return "0" }
         if value == 1 { return "A" }
+        if value == 10 { return "10" }
         return "\(value)"
     }
 
     var body: some View {
         ZStack {
-            // Card background
-            RoundedRectangle(cornerRadius: 6)
+            // Card background - white with rounded corners
+            RoundedRectangle(cornerRadius: 8)
                 .fill(Color.white)
-                .shadow(color: .black.opacity(0.15), radius: 3, x: 0, y: 2)
+                .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
 
             // Card border
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.black.opacity(0.1), lineWidth: 1)
 
-            // Card content
-            VStack(spacing: 2) {
-                Text(label)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+            // Card content - Atlas style layout
+            VStack(spacing: 0) {
+                // Top left corner
+                HStack {
+                    VStack(spacing: -2) {
+                        Text(label)
+                            .font(.system(size: 16, weight: .bold))
+                        Text("♣")
+                            .font(.system(size: 14))
+                    }
+                    Spacer()
+                }
+                .padding(.leading, 6)
+                .padding(.top, 4)
+
+                Spacer()
+
+                // Center club symbol
                 Text("♣")
-                    .font(.system(size: 16))
+                    .font(.system(size: 40, weight: .bold))
+
+                Spacer()
+
+                // Bottom right corner (inverted)
+                HStack {
+                    Spacer()
+                    VStack(spacing: -2) {
+                        Text("♣")
+                            .font(.system(size: 14))
+                        Text(label)
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .rotationEffect(.degrees(180))
+                }
+                .padding(.trailing, 6)
+                .padding(.bottom, 4)
             }
             .foregroundColor(.black)
         }
-        .frame(width: 50, height: 70)
+        .frame(width: 80, height: 112)  // Standard card ratio 2.5:3.5
     }
 }
 
