@@ -39,23 +39,22 @@ struct TotalActivityView: View {
 
     // MARK: - Today Section
     private var todaySection: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 16) {
             Text("Today")
                 .font(.headline)
                 .foregroundColor(.secondary)
 
             PickupCardDisplay(count: todayPickups)
+                .padding(.vertical, 8)
 
             if todayPickups > 10 {
                 Text("No tenclub today!")
                     .font(.subheadline)
                     .foregroundColor(.red)
-                    .padding(.top, 4)
             } else if todayPickups > 0 {
                 Text("\(10 - todayPickups) remaining")
                     .font(.subheadline)
                     .foregroundColor(.green)
-                    .padding(.top, 4)
             }
         }
         .padding()
@@ -106,54 +105,54 @@ struct MiniCardView: View {
     var body: some View {
         ZStack {
             // Card background - white with rounded corners
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 12)
                 .fill(Color.white)
-                .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
 
             // Card border
-            RoundedRectangle(cornerRadius: 8)
+            RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.black.opacity(0.1), lineWidth: 1)
 
             // Card content - Atlas style layout
             VStack(spacing: 0) {
                 // Top left corner
                 HStack {
-                    VStack(spacing: -2) {
+                    VStack(spacing: -4) {
                         Text(label)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 28, weight: .bold))
                         Text("♣")
-                            .font(.system(size: 14))
+                            .font(.system(size: 24))
                     }
                     Spacer()
                 }
-                .padding(.leading, 6)
-                .padding(.top, 4)
+                .padding(.leading, 12)
+                .padding(.top, 8)
 
                 Spacer()
 
                 // Center club symbol
                 Text("♣")
-                    .font(.system(size: 40, weight: .bold))
+                    .font(.system(size: 72, weight: .bold))
 
                 Spacer()
 
                 // Bottom right corner (inverted)
                 HStack {
                     Spacer()
-                    VStack(spacing: -2) {
+                    VStack(spacing: -4) {
                         Text("♣")
-                            .font(.system(size: 14))
+                            .font(.system(size: 24))
                         Text(label)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 28, weight: .bold))
                     }
                     .rotationEffect(.degrees(180))
                 }
-                .padding(.trailing, 6)
-                .padding(.bottom, 4)
+                .padding(.trailing, 12)
+                .padding(.bottom, 8)
             }
             .foregroundColor(.black)
         }
-        .frame(width: 80, height: 112)  // Standard card ratio 2.5:3.5
+        .frame(width: 140, height: 196)  // Standard card ratio 2.5:3.5, enlarged
     }
 }
 
