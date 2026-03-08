@@ -158,8 +158,22 @@ struct HistoryChartView: View {
         return formatter.string(from: date)
     }
 
+    private func isToday(_ date: Date) -> Bool {
+        Calendar.current.isDateInToday(date)
+    }
+
     private func madeTenclub(_ count: Int) -> Bool {
         count <= 10 && count > 0
+    }
+
+    private func barColor(for day: DailyPickups) -> Color {
+        if isToday(day.date) {
+            return .indigo
+        } else if madeTenclub(day.count) {
+            return Color(red: 1.0, green: 0.84, blue: 0.0) // Gold
+        } else {
+            return .gray
+        }
     }
 
     var body: some View {
@@ -174,7 +188,7 @@ struct HistoryChartView: View {
                             x: .value("Date", dateLabel(for: day.date)),
                             y: .value("Pickups", day.count)
                         )
-                        .foregroundStyle(madeTenclub(day.count) ? Color.green : Color.gray)
+                        .foregroundStyle(barColor(for: day))
                         .annotation(position: .top) {
                             if madeTenclub(day.count) {
                                 Text("♣")
@@ -187,6 +201,13 @@ struct HistoryChartView: View {
                 .chartYScale(domain: 0...maxYValue)
                 .chartYAxis {
                     AxisMarks(position: .leading, values: .stride(by: 5))
+                }
+                .chartXAxis {
+                    AxisMarks { value in
+                        AxisValueLabel()
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(Color.indigo)
+                    }
                 }
                 .frame(height: 250)
                 .padding()
