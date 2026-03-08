@@ -11,6 +11,8 @@
 		</dict>
 		<key>TenclubReport.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<true/>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
@@ -18,6 +20,19 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>EFC4770B2F520D84006EC69F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EFFED38C2F3D27BC0091D345</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

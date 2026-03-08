@@ -261,7 +261,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5FYMK736XC;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TenclubReport/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TenclubReport;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -292,7 +292,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5FYMK736XC;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TenclubReport/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TenclubReport;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
