@@ -41,20 +41,20 @@ struct TotalActivityView: View {
     private var todaySection: some View {
         VStack(spacing: 12) {
             Text("Today")
-                .font(.headline)
-                .foregroundColor(.secondary)
+                .font(Theme.headline())
+                .foregroundColor(Theme.textSecondary)
 
             PickupCardDisplay(count: todayPickups)
                 .frame(maxHeight: .infinity)
 
             if todayPickups > 10 {
                 Text("No tenclub today!")
-                    .font(.subheadline)
-                    .foregroundColor(.red)
+                    .font(Theme.body())
+                    .foregroundColor(Theme.red)
             } else if todayPickups > 0 {
                 Text("\(10 - todayPickups) remaining")
-                    .font(.subheadline)
-                    .foregroundColor(.green)
+                    .font(Theme.body())
+                    .foregroundColor(Theme.gold)
             }
         }
         .padding()
@@ -73,10 +73,11 @@ struct PickupCardDisplay: View {
             // 100+: Plain numbers
             VStack(spacing: 4) {
                 Text("\(count)")
-                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .font(Theme.number())
+                    .foregroundColor(Theme.black)
                 Text("pickups")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(Theme.caption())
+                    .foregroundColor(Theme.textSecondary)
             }
         } else if count >= 10 {
             // 10-99: Two cards side by side
@@ -123,13 +124,13 @@ struct MiniCardView: View {
             // Fallback for 0
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white)
-                    .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                    .fill(Theme.white)
+                    .shadow(color: Theme.black.opacity(0.2), radius: 8, x: 0, y: 4)
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                    .stroke(Theme.black.opacity(0.1), lineWidth: 1)
                 Text("0")
-                    .font(.system(size: 72, weight: .bold))
-                    .foregroundColor(.black)
+                    .font(Theme.number(72))
+                    .foregroundColor(Theme.black)
             }
             .aspectRatio(2.0/3.0, contentMode: .fit)
             .frame(maxHeight: .infinity)
@@ -180,9 +181,9 @@ struct HistoryChartView: View {
 
     private func barColor(for day: DailyPickups) -> Color {
         if isToday(day.date) {
-            return .indigo
+            return Theme.red
         } else if madeTenclub(day.count) {
-            return Color(red: 1.0, green: 0.84, blue: 0.0) // Gold
+            return Theme.gold
         } else {
             return .gray
         }
@@ -192,7 +193,8 @@ struct HistoryChartView: View {
         VStack(spacing: 16) {
             if dailyData.isEmpty {
                 Text("No data available")
-                    .foregroundColor(.secondary)
+                    .font(Theme.body())
+                    .foregroundColor(Theme.textSecondary)
             } else {
                 Chart {
                     ForEach(dailyData, id: \.date) { day in
@@ -204,8 +206,8 @@ struct HistoryChartView: View {
                         .annotation(position: .top) {
                             if madeTenclub(day.count) {
                                 Text("♣")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.black)
+                                    .font(Theme.caption())
+                                    .foregroundColor(Theme.black)
                             }
                         }
                     }
@@ -217,8 +219,8 @@ struct HistoryChartView: View {
                 .chartXAxis {
                     AxisMarks { value in
                         AxisValueLabel()
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(Color.indigo)
+                            .font(Theme.caption())
+                            .foregroundStyle(Theme.red)
                     }
                 }
                 .frame(height: 250)

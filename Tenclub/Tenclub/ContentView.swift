@@ -94,16 +94,15 @@ struct HomeView: View {
                 // Not authorized - show request button
                 Image(systemName: "lock.shield")
                     .font(.system(size: 60))
-                    .foregroundColor(.blue)
+                    .foregroundColor(Theme.red)
                     .padding(.bottom, 20)
 
                 Text("Screen Time Access Required")
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                    .font(Theme.title())
 
                 Text("Tenclub needs access to Screen Time data to count your daily unlocks.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
+                    .font(Theme.body())
+                    .foregroundColor(Theme.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
                     .padding(.bottom, 20)
@@ -114,19 +113,19 @@ struct HomeView: View {
                     }
                 } label: {
                     Text("Allow Access")
-                        .font(.headline)
-                        .foregroundColor(.white)
+                        .font(Theme.headline())
+                        .foregroundColor(Theme.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
+                        .background(Theme.red)
                         .cornerRadius(12)
                 }
                 .padding(.horizontal, 40)
 
                 if let error = screenTimeManager.authorizationError {
                     Text(error)
-                        .font(.caption)
-                        .foregroundColor(.red)
+                        .font(Theme.caption())
+                        .foregroundColor(Theme.red)
                         .padding(.top, 10)
                 }
 
@@ -185,7 +184,8 @@ struct HistoryView: View {
                     }
                 } else {
                     Text("Screen Time access required")
-                        .foregroundColor(.secondary)
+                        .font(Theme.body())
+                        .foregroundColor(Theme.textSecondary)
                 }
             }
             .navigationTitle("History")
@@ -208,21 +208,24 @@ struct SettingsView: View {
                 Section {
                     HStack {
                         Text("Screen Time Access")
+                            .font(Theme.body())
                         Spacer()
                         Text(screenTimeManager.isAuthorized ? "Granted" : "Not Granted")
-                            .foregroundColor(screenTimeManager.isAuthorized ? .green : .red)
+                            .font(Theme.body())
+                            .foregroundColor(screenTimeManager.isAuthorized ? Theme.gold : Theme.red)
                     }
                 }
 
                 Section {
                     Text("Accountability buddy feature coming in V3")
-                        .foregroundColor(.secondary)
+                        .font(Theme.body())
+                        .foregroundColor(Theme.textSecondary)
                 }
 
                 Section("About") {
                     Text("Tenclub tracks your daily phone pickups. Stay at 10 or fewer to \"make the Tenclub.\"")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(Theme.caption())
+                        .foregroundColor(Theme.textSecondary)
                 }
             }
             .navigationTitle("Settings")
