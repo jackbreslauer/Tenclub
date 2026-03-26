@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import FamilyControls
 import DeviceActivity
 
@@ -17,6 +18,26 @@ extension DeviceActivityReport.Context {
 
 struct ContentView: View {
     @StateObject private var screenTimeManager = ScreenTimeManager.shared
+
+    init() {
+        // Apply New York (serif) font to navigation bar titles
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+
+        // Large title (when scrolled to top)
+        appearance.largeTitleTextAttributes = [
+            .font: UIFont(descriptor: UIFontDescriptor.preferredFontDescriptor(withTextStyle: .largeTitle).withDesign(.serif)!, size: 34)
+        ]
+
+        // Inline title (when scrolled)
+        appearance.titleTextAttributes = [
+            .font: UIFont(descriptor: UIFontDescriptor.preferredFontDescriptor(withTextStyle: .headline).withDesign(.serif)!, size: 17)
+        ]
+
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().compactAppearance = appearance
+    }
 
     var body: some View {
         TabView {
