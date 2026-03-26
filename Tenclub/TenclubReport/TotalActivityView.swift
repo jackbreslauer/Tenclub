@@ -39,13 +39,13 @@ struct TotalActivityView: View {
 
     // MARK: - Today Section
     private var todaySection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             Text("Today")
                 .font(.headline)
                 .foregroundColor(.secondary)
 
             PickupCardDisplay(count: todayPickups)
-                .padding(.vertical, 8)
+                .frame(maxHeight: .infinity)
 
             if todayPickups > 10 {
                 Text("No tenclub today!")
@@ -58,6 +58,7 @@ struct TotalActivityView: View {
             }
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         .cornerRadius(12)
     }
@@ -91,14 +92,22 @@ struct PickupCardDisplay: View {
 }
 
 // MARK: - Mini Card View (for extension)
-// Displays Atlas deck playing card images
+// Displays Atlas deck playing card images with random suit
 struct MiniCardView: View {
     let value: Int  // 0-10
 
+    private static let suits = ["clubs", "diamonds", "hearts", "spades"]
+
+    // Use value as seed for consistent suit per card value
+    private var suit: String {
+        let index = abs(value.hashValue) % Self.suits.count
+        return Self.suits[index]
+    }
+
     private var imageName: String? {
         switch value {
-        case 1: return "ace_of_clubs"
-        case 2...10: return "\(value)_of_clubs"
+        case 1: return "ace_of_\(suit)"
+        case 2...10: return "\(value)_of_\(suit)"
         default: return nil
         }
     }
@@ -107,22 +116,23 @@ struct MiniCardView: View {
         if let imageName = imageName {
             Image(imageName)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 196)
-                .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
+                .aspectRatio(2.0/3.0, contentMode: .fit)
+                .frame(maxHeight: .infinity)
+                .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
         } else {
             // Fallback for 0
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 16)
                     .fill(Color.white)
-                    .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
-                RoundedRectangle(cornerRadius: 12)
+                    .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(Color.black.opacity(0.1), lineWidth: 1)
                 Text("0")
-                    .font(.system(size: 48, weight: .bold))
+                    .font(.system(size: 72, weight: .bold))
                     .foregroundColor(.black)
             }
-            .frame(width: 140, height: 196)
+            .aspectRatio(2.0/3.0, contentMode: .fit)
+            .frame(maxHeight: .infinity)
         }
     }
 }
