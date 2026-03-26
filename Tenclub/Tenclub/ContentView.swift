@@ -158,6 +158,7 @@ struct HomeView: View {
             .navigationTitle("Today")
             .navigationBarTitleDisplayMode(.large)
         }
+        .navigationViewStyle(.stack)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             // Auto-refresh when app returns to foreground
             if newPhase == .active {
@@ -200,31 +201,36 @@ struct HistoryView: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
-                // Blue card back background
-                Image("card_back_blue")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .ignoresSafeArea()
-                    .opacity(0.15)
+            GeometryReader { geometry in
+                ZStack {
+                    // Blue card back background scaled to screen
+                    Image("card_back_blue")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                        .opacity(0.15)
 
-                VStack {
-                    if screenTimeManager.isAuthorized {
-                        if isReportVisible {
-                            DeviceActivityReport(.historyChart, filter: activityFilter)
+                    VStack {
+                        if screenTimeManager.isAuthorized {
+                            if isReportVisible {
+                                DeviceActivityReport(.historyChart, filter: activityFilter)
+                            } else {
+                                ProgressView()
+                            }
                         } else {
-                            ProgressView()
+                            Text("Screen Time access required")
+                                .font(Theme.body())
+                                .foregroundColor(Theme.textSecondary)
                         }
-                    } else {
-                        Text("Screen Time access required")
-                            .font(Theme.body())
-                            .foregroundColor(Theme.textSecondary)
                     }
                 }
             }
+            .ignoresSafeArea(edges: .bottom)
             .navigationTitle("History")
             .navigationBarTitleDisplayMode(.large)
         }
+        .navigationViewStyle(.stack)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
                 refreshReport()
@@ -266,6 +272,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
         }
+        .navigationViewStyle(.stack)
     }
 }
 
