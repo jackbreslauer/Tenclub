@@ -44,6 +44,7 @@
        id="3"
        style="fill:#ffab55;stroke:#000000;stroke-linecap:round;stroke-linejoin:round" />
   </defs>
+    <rect width="360" height="540" rx="30" fill="white"/>
   <g
      transform="translate(0,-512.36)"
      id="g10">
