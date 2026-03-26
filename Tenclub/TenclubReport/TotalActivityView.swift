@@ -40,10 +40,6 @@ struct TotalActivityView: View {
     // MARK: - Today Section
     private var todaySection: some View {
         VStack(spacing: 12) {
-            Text("Today")
-                .font(Theme.headline())
-                .foregroundColor(Theme.textSecondary)
-
             PickupCardDisplay(count: todayPickups)
                 .frame(maxHeight: .infinity)
 
