@@ -10,7 +10,7 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    version="1.1"
    width="360"
-   height="540"
+   height="540" viewBox="0 0 360 540"
    id="svg2">
   <metadata
      id="metadata46">
@@ -56,14 +56,14 @@
          x="0"
          y="0"
          width="360"
-         height="540"
+         height="540" viewBox="0 0 360 540"
          xlink:href="#0" />
       <use
          id="use16"
          x="0"
          y="0"
          width="360"
-         height="540"
+         height="540" viewBox="0 0 360 540"
          xlink:href="#1" />
     </g>
     <path
