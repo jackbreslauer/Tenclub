@@ -41,7 +41,7 @@ If we update this privacy policy, we will post the new version within the app an
 
 If you have questions about this privacy policy, please contact:
 
-**Email:** [YOUR_EMAIL]
+**Email:** jabreslauer@gmail.com
 
 ---
 
