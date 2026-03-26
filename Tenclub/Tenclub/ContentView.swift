@@ -156,6 +156,7 @@ struct HomeView: View {
             }
             .padding()
             .navigationTitle("Today")
+            .navigationBarTitleDisplayMode(.large)
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             // Auto-refresh when app returns to foreground
@@ -199,20 +200,30 @@ struct HistoryView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                if screenTimeManager.isAuthorized {
-                    if isReportVisible {
-                        DeviceActivityReport(.historyChart, filter: activityFilter)
+            ZStack {
+                // Blue card back background
+                Image("card_back_blue")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .ignoresSafeArea()
+                    .opacity(0.15)
+
+                VStack {
+                    if screenTimeManager.isAuthorized {
+                        if isReportVisible {
+                            DeviceActivityReport(.historyChart, filter: activityFilter)
+                        } else {
+                            ProgressView()
+                        }
                     } else {
-                        ProgressView()
+                        Text("Screen Time access required")
+                            .font(Theme.body())
+                            .foregroundColor(Theme.textSecondary)
                     }
-                } else {
-                    Text("Screen Time access required")
-                        .font(Theme.body())
-                        .foregroundColor(Theme.textSecondary)
                 }
             }
             .navigationTitle("History")
+            .navigationBarTitleDisplayMode(.large)
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             if newPhase == .active {
@@ -253,6 +264,7 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.large)
         }
     }
 }
