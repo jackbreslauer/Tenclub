@@ -101,60 +101,73 @@ struct HomeView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                if screenTimeManager.isAuthorized {
-                    // Authorized - show today's pickup count from DeviceActivityReport
-                    if isReportVisible {
-                        DeviceActivityReport(.totalActivity, filter: activityFilter)
-                    } else {
-                        // Loading placeholder while refreshing
-                        ProgressView()
-                    }
+            GeometryReader { geometry in
+                ZStack {
+                    // Blue card back background
+                    Image("card_back_blue")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                        .opacity(0.15)
 
-                } else {
-                    Spacer()
-                    // Not authorized - show request button
-                    Image(systemName: "lock.shield")
-                        .font(.system(size: 60))
-                        .foregroundColor(Theme.red)
-                        .padding(.bottom, 20)
+                    VStack(spacing: 20) {
+                        if screenTimeManager.isAuthorized {
+                            // Authorized - show today's pickup count from DeviceActivityReport
+                            if isReportVisible {
+                                DeviceActivityReport(.totalActivity, filter: activityFilter)
+                            } else {
+                                // Loading placeholder while refreshing
+                                ProgressView()
+                            }
 
-                    Text("Screen Time Access Required")
-                        .font(Theme.title())
+                        } else {
+                            Spacer()
+                            // Not authorized - show request button
+                            Image(systemName: "lock.shield")
+                                .font(.system(size: 60))
+                                .foregroundColor(Theme.red)
+                                .padding(.bottom, 20)
 
-                    Text("Tenclub needs access to Screen Time data to count your daily unlocks.")
-                        .font(Theme.body())
-                        .foregroundColor(Theme.textSecondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                        .padding(.bottom, 20)
+                            Text("Screen Time Access Required")
+                                .font(Theme.title())
 
-                    Button {
-                        Task {
-                            await screenTimeManager.requestAuthorization()
+                            Text("Tenclub needs access to Screen Time data to count your daily unlocks.")
+                                .font(Theme.body())
+                                .foregroundColor(Theme.textSecondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 40)
+                                .padding(.bottom, 20)
+
+                            Button {
+                                Task {
+                                    await screenTimeManager.requestAuthorization()
+                                }
+                            } label: {
+                                Text("Allow Access")
+                                    .font(Theme.headline())
+                                    .foregroundColor(Theme.white)
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(Theme.red)
+                                    .cornerRadius(12)
+                            }
+                            .padding(.horizontal, 40)
+
+                            if let error = screenTimeManager.authorizationError {
+                                Text(error)
+                                    .font(Theme.caption())
+                                    .foregroundColor(Theme.red)
+                                    .padding(.top, 10)
+                            }
+
+                            Spacer()
                         }
-                    } label: {
-                        Text("Allow Access")
-                            .font(Theme.headline())
-                            .foregroundColor(Theme.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Theme.red)
-                            .cornerRadius(12)
                     }
-                    .padding(.horizontal, 40)
-
-                    if let error = screenTimeManager.authorizationError {
-                        Text(error)
-                            .font(Theme.caption())
-                            .foregroundColor(Theme.red)
-                            .padding(.top, 10)
-                    }
-
-                    Spacer()
+                    .padding()
                 }
             }
-            .padding()
+            .ignoresSafeArea(edges: .bottom)
             .navigationTitle("Today")
             .navigationBarTitleDisplayMode(.large)
         }
@@ -203,8 +216,8 @@ struct HistoryView: View {
         NavigationView {
             GeometryReader { geometry in
                 ZStack {
-                    // Blue card back background scaled to screen
-                    Image("card_back_blue")
+                    // Red card back background scaled to screen
+                    Image("card_back_red")
                         .resizable()
                         .scaledToFill()
                         .frame(width: geometry.size.width, height: geometry.size.height)
