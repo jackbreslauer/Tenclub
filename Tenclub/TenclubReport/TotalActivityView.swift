@@ -91,68 +91,39 @@ struct PickupCardDisplay: View {
 }
 
 // MARK: - Mini Card View (for extension)
-// Renders playing cards in Atlas deck style
+// Displays Atlas deck playing card images
 struct MiniCardView: View {
     let value: Int  // 0-10
 
-    private var label: String {
-        if value == 0 { return "0" }
-        if value == 1 { return "A" }
-        if value == 10 { return "10" }
-        return "\(value)"
+    private var imageName: String? {
+        switch value {
+        case 1: return "ace_of_clubs"
+        case 2...10: return "\(value)_of_clubs"
+        default: return nil
+        }
     }
 
     var body: some View {
-        ZStack {
-            // Card background - white with rounded corners
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white)
+        if let imageName = imageName {
+            Image(imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 196)
                 .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
-
-            // Card border
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.black.opacity(0.1), lineWidth: 1)
-
-            // Card content - Atlas style layout
-            VStack(spacing: 0) {
-                // Top left corner
-                HStack {
-                    VStack(spacing: -4) {
-                        Text(label)
-                            .font(.system(size: 28, weight: .bold))
-                        Text("♣")
-                            .font(.system(size: 24))
-                    }
-                    Spacer()
-                }
-                .padding(.leading, 12)
-                .padding(.top, 8)
-
-                Spacer()
-
-                // Center club symbol
-                Text("♣")
-                    .font(.system(size: 72, weight: .bold))
-
-                Spacer()
-
-                // Bottom right corner (inverted)
-                HStack {
-                    Spacer()
-                    VStack(spacing: -4) {
-                        Text("♣")
-                            .font(.system(size: 24))
-                        Text(label)
-                            .font(.system(size: 28, weight: .bold))
-                    }
-                    .rotationEffect(.degrees(180))
-                }
-                .padding(.trailing, 12)
-                .padding(.bottom, 8)
+        } else {
+            // Fallback for 0
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white)
+                    .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                Text("0")
+                    .font(.system(size: 48, weight: .bold))
+                    .foregroundColor(.black)
             }
-            .foregroundColor(.black)
+            .frame(width: 140, height: 196)
         }
-        .frame(width: 140, height: 196)  // Standard card ratio 2.5:3.5, enlarged
     }
 }
 
